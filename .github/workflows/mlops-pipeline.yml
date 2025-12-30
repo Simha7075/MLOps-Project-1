@@ -1,0 +1,55 @@
+name: Insurance Claims MLOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  train-evaluate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Data Ingestion
+        run: |
+          python src/data_ingestion.py
+
+      - name: Data Preprocessing
+        run: |
+          python src/data_preprocessing.py
+
+      - name: Train Model
+        run: |
+          python src/train.py
+
+      - name: Evaluate Model
+        run: |
+          python src/evaluate.py
+
+      - name: Check Model Promotion Decision
+        run: |
+          decision=$(cat models/model_decision.txt)
+          echo "Model decision: $decision"
+
+          if [ "$decision" != "PROMOTED" ]; then
+            echo "Model rejected. Stopping pipeline."
+            exit 1
+          fi
+
+      - name: Deploy (Simulated)
+        run: |
+          echo "Model promoted. Ready for deployment."
