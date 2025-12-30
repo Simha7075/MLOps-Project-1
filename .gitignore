@@ -1,4 +1,20 @@
-.venv/
+# Python virtual environment
 venv/
+.venv/
+.env/
 
-**/venv/
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# ML artifacts
+mlruns/
+models/
+
+# DVC cache
+.dvc/cache/
+
+# OS files
+.DS_Store
+Thumbs.db
